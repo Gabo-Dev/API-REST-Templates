@@ -1,25 +1,24 @@
-import { useFetch } from "./useFetch";
+import { Suspense } from "react";
+import { fetchData } from "./fetchData";
 import "./App.css";
 
-function App() {
-  //destructuracion de nuestro fetch
-  const { data, loading, error, handleCancelRequest } = useFetch(
-    "https://jsonplaceholder.typicode.com/users"
-  );
+const apiData = fetchData("https://jsonplaceholder.typicode.com/users");
 
+function App() {
+  const data = apiData.read();
+
+  // Suspense Component display  default msg while the data is loading
   return (
     <div className="App">
       <h1>Fetch Like a PRO</h1>
-      <button onClick={handleCancelRequest}>Cancel Request</button>
-      <div className="card">
-        <ul>
-          {error && <h3>Error: {error}</h3>}
-          {loading && <li>Loading....</li>}
-          {data?.map((user) => (
+
+      <Suspense fallback={<div>Loading....</div>}>
+        <ul className="card">
+        {data?.map((user) => (
             <li key={user.id}>{user.name}</li>
           ))}
         </ul>
-      </div>
+      </Suspense>
     </div>
   );
 }
